@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leiner Glacier Itinerary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Lora:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f9fafb; 
+        }
+        .font-lora {
+            font-family: 'Lora', serif;
+        }
+        .flyer-container {
+            max-width: 700px;
+            margin: 2rem auto;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+        .header-bg {
+            background-color: #064e3b; /* Dark Green */
+            color: #ffffff;
+        }
+        .itinerary-item {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+        .itinerary-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            border-color: #14b8a6; /* Teal */
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content {
+            margin: 5% auto;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            position: relative;
+            animation: slideIn 0.4s ease;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .modal-body {
+            background-color: #065f46; /* Darker Green for Modal */
+            color: #f9fafb;
+            padding: 1.5rem; /* Reduced padding for mobile */
+            height: 100%;
+            overflow-y: auto;
+            box-sizing: border-box;
+            -webkit-overflow-scrolling: touch;
+        }
+        .close-btn {
+            color: #d1d5db;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.2s;
+            z-index: 10;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .close-btn:hover {
+            color: #fff;
+        }
+        .action-link {
+            display: inline-block;
+            background: #0d9488; /* Teal */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 9999px;
+            text-decoration: none;
+            margin-top: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .action-link:hover {
+            background: #0f766e; /* Darker Teal */
+            transform: translateY(-2px);
+        }
+        .location-link {
+            text-decoration: none;
+            color: #5eead4; /* Bright Teal */
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .location-link:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+        .location-link svg {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            margin-right: 4px;
+            vertical-align: -0.125em;
+        }
+        .schedule-entry {
+            display: flex;
+            flex-direction: column; /* Stack on mobile */
+            align-items: flex-start;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .schedule-entry:last-child {
+            border-bottom: none;
+        }
+        .schedule-time {
+            flex-shrink: 0;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #ccfbf1; /* Light Teal */
+            margin-bottom: 0.25rem; /* Space when stacked */
+        }
+        .schedule-details {
+            flex-grow: 1;
+        }
+        /* Medium screens and up */
+        @media (min-width: 640px) {
+            .modal-body {
+                padding: 2.5rem;
+            }
+            .schedule-entry {
+                flex-direction: row; /* Side-by-side on larger screens */
+                align-items: flex-start;
+            }
+            .schedule-time {
+                width: 6rem;
+                margin-bottom: 0;
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="p-2 sm:p-4">
+
+    <div class="flyer-container">
+        <!-- Header -->
+        <div class="header-bg p-6 md:p-10 text-center">
+            <h1 class="font-lora text-3xl md:text-5xl font-bold tracking-tight">Your Glacier Adventure</h1>
+            <p class="mt-3 text-base md:text-lg font-light">July 6–10, 2025 | Prepared for the Leiner Family</p>
+        </div>
+
+        <!-- Itinerary List -->
+        <div class="p-4 md:p-8">
+            <div class="space-y-4">
+                <!-- Day 1 -->
+                <div class="itinerary-item p-4 rounded-xl cursor-pointer flex items-center space-x-4" onclick="openModal('day1Modal')">
+                    <div class="flex-shrink-0 w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-500 text-xs sm:text-sm">Sunday, July 6</p>
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-800">Arrival & Whitefish Exploration</h3>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
+                <!-- Day 2 -->
+                <div class="itinerary-item p-4 rounded-xl cursor-pointer flex items-center space-x-4" onclick="openModal('day2Modal')">
+                    <div class="flex-shrink-0 w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-500 text-xs sm:text-sm">Monday, July 7</p>
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-800">Avalanche Lake & Apgar Village</h3>
+                    </div>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
+                <!-- Day 3 -->
+                <div class="itinerary-item p-4 rounded-xl cursor-pointer flex items-center space-x-4" onclick="openModal('day3Modal')">
+                    <div class="flex-shrink-0 w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-500 text-xs sm:text-sm">Tuesday, July 8</p>
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-800">Sailing & Off-Road Adventure</h3>
+                    </div>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
+                <!-- Day 4 -->
+                 <div class="itinerary-item p-4 rounded-xl cursor-pointer flex items-center space-x-4" onclick="openModal('day4Modal')">
+                    <div class="flex-shrink-0 w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" /></svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-500 text-xs sm:text-sm">Wednesday, July 9</p>
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-800">East Glacier & Hidden Lake</h3>
+                    </div>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
+                <!-- Day 5 -->
+                 <div class="itinerary-item p-4 rounded-xl cursor-pointer flex items-center space-x-4" onclick="openModal('day5Modal')">
+                    <div class="flex-shrink-0 w-12 h-12 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-gray-500 text-xs sm:text-sm">Thursday, July 10</p>
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-800">Departure Day</h3>
+                    </div>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div class="bg-gray-100 p-6 text-center text-gray-500">
+            <p class="font-bold text-gray-700">Apex Concierge Services</p>
+            <p class="text-sm mt-1">Your journey, perfectly planned. We wish you an unforgettable trip.</p>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="day1Modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-body">
+                <span class="close-btn">&times;</span>
+                <h2 class="font-lora text-2xl md:text-3xl font-bold mb-4">Sunday: Arrival & Whitefish</h2>
+                <div class="mt-4">
+                    <div class="schedule-entry"><div class="schedule-time">11:36 AM</div><div class="schedule-details">Arrive at <a href="https://www.google.com/maps/search/?api=1&query=Glacier+Park+International+Airport+FCA" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Glacier Park Int'l (FCA)</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">12:30 PM</div><div class="schedule-details">Pick up rental car from <a href="https://www.google.com/maps/search/?api=1&query=Thrifty+Car+Rental+Glacier+Park+International+Airport" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Thrifty</a><br><span class="text-sm opacity-80">Conf #: L2573625102 | Total: $342.23</span><br><a href="https://view.emails.thrifty.com/?qs=088b9bb947f48271cea40c0762ec5f39ba8034a371687fe00cb80c55c42bfbdb25554a3d041770cc2b1cefad53bcf9952ac8c87e088f4eeeb981f7e84add8b3493d7845f3e2053560bd997c42a9f94bb" target="_blank" class="action-link text-xs py-2 px-3">View Confirmation</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">3:30 PM</div><div class="schedule-details">Scenic Chairlift Ride at <a href="https://www.google.com/maps/search/?api=1&query=Whitefish+Mountain+Resort+Base+Lodge" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Whitefish Mountain Resort</a><br><span class="text-sm opacity-80">Buy tickets at counter, 2nd floor base lodge.</span></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">6:00 PM</div><div class="schedule-details">Explore <a href="https://www.google.com/maps/search/?api=1&query=Downtown+Whitefish+MT" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Downtown Whitefish</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">7:00 PM</div><div class="schedule-details">Drive to <a href="https://www.google.com/maps/search/?api=1&query=355+Beaver+Lake+Rd,+Whitefish,+MT" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>North Star Ranch</a></div></div>
+                    <div class="bg-black bg-opacity-20 p-4 rounded-lg mt-6 backdrop-blur-sm">
+                        <h4 class="font-semibold text-white mb-2">Recommended Stops in Whitefish:</h4>
+                        <ul class="space-y-2">
+                            <li><a href="https://www.google.com/maps/search/?api=1&query=Baker+Park,+Whitefish,+MT" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Baker Park</a></li>
+                            <li><a href="https://www.google.com/maps/search/?api=1&query=The+Wave+1250+Baker+Ave,+Ste+100,+Whitefish,+MT" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>The Wave</a></li>
+                            <li><a href="https://www.google.com/maps/search/?api=1&query=Going+to+the+Sun+Gallery+137+Central+Ave,+Whitefish,+MT" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Going to the Sun Gallery</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="day2Modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-body">
+                <span class="close-btn">&times;</span>
+                <h2 class="font-lora text-2xl md:text-3xl font-bold mb-4">Monday: Avalanche Lake & Apgar</h2>
+                <div class="mt-4">
+                    <div class="schedule-entry"><div class="schedule-time">9:30 AM</div><div class="schedule-details">Depart for Glacier National Park</div></div>
+                    <div class="schedule-entry"><div class="schedule-time">12:00 PM</div><div class="schedule-details">Hike: Avalanche Lake<br><a href="https://www.alltrails.com/trail/us/montana/avalanche-lake--6" target="_blank" class="action-link text-xs py-2 px-3 mt-2">View Trail Details</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">5:00 PM</div><div class="schedule-details">Explore <a href="https://www.google.com/maps/search/?api=1&query=Apgar+Village,+Glacier+National+Park" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Apgar Village</a> & check with <a href="https://www.google.com/maps/search/?api=1&query=Glacier+Outfitters+196+Apgar+Loop+Rd,+West+Glacier,+MT" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Glacier Outfitters</a> about e-bikes.</div></div>
+                    <div class="schedule-entry"><div class="schedule-time">6:30 PM</div><div class="schedule-details">Depart for <a href="https://www.google.com/maps/search/?api=1&query=Lake+McDonald+Lodge" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Lake McDonald Lodge</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">7:00 PM</div><div class="schedule-details">Sunset Cruise on Lake McDonald<br><span class="text-sm opacity-80">2 Adults | Conf #: ZZ062625103</span><br><a href="#!" onclick="openModal('reservationModal')" class="action-link text-xs py-2 px-3 mt-2" title="View Reservation Details">View Reservation</a></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="day3Modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-body">
+                <span class="close-btn">&times;</span>
+                <h2 class="font-lora text-2xl md:text-3xl font-bold mb-4">Tuesday: Sailing & Off-Roading</h2>
+                <div class="mt-4">
+                    <div class="schedule-entry"><div class="schedule-time">9:00 AM</div><div class="schedule-details">Depart for <a href="https://www.google.com/maps/search/?api=1&query=38132+US-93,+Big+Arm,+MT+59910" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Flathead Lake</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">10:00 AM</div><div class="schedule-details">Private Sail Charter on Flathead Lake<br><span class="text-sm opacity-80">with Go Sail Montana</span><br><a href="#!" onclick="openModal('sailingReservationModal')" class="action-link text-xs py-2 px-3 mt-2" title="View Reservation Details">View Reservation</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">1:30 PM</div><div class="schedule-details">Off-Road UTV Adventure at <a href="https://www.google.com/maps/search/?api=1&query=Glacier+Ridge+Runners+7710+US-2+E,+Columbia+Falls,+MT" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Glacier Ridge Runners</a><br><span class="text-sm opacity-80">Half Day Rental | 1:30 PM - 5:30 PM</span><br><a href="#!" onclick="openModal('utvReservationModal')" class="action-link text-xs py-2 px-3 mt-2" title="View Reservation Details">View Reservation</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">7:00 PM</div><div class="schedule-details">Return to North Star Ranch</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="day4Modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-body">
+                <span class="close-btn">&times;</span>
+                <h2 class="font-lora text-2xl md:text-3xl font-bold mb-4">Wednesday: East Glacier & Hidden Lake</h2>
+                 <div class="mt-4">
+                    <div class="schedule-entry"><div class="schedule-time">9:00 AM</div><div class="schedule-details">Depart to <a href="https://www.google.com/maps/search/?api=1&query=Rising+Sun+Boat+Dock+Glacier+National+Park" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Rising Sun Boat Dock</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">1:00 PM</div><div class="schedule-details">Guided Hike & Boat Ride<br><span class="text-sm opacity-80">2 Adults | Conf #: JC070325263</span><br><a href="#!" onclick="openModal('wednesdayBoatReservationModal')" class="action-link text-xs py-2 px-3 mt-2" title="View Reservation Details">View Reservation</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">5:00 PM</div><div class="schedule-details">Visit <a href="https://www.google.com/maps/search/?api=1&query=Logan+Pass+Visitor+Center" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Logan Pass Visitor Center</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">5:30 PM</div><div class="schedule-details">Hike to Hidden Lake Overlook<br><a href="https://www.alltrails.com/trail/us/montana/hidden-lake-overlook" target="_blank" class="action-link text-xs py-2 px-3 mt-2">View Trail Details</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">7:00 PM</div><div class="schedule-details">Return to North Star Ranch</div></div>
+                    <div class="bg-black bg-opacity-20 p-4 rounded-lg mt-6 backdrop-blur-sm">
+                        <h4 class="font-semibold text-white mb-2">Scenic Stops – Going-to-the-Sun Road:</h4>
+                        <ul class="space-y-2">
+                            <li><a href="https://www.google.com/maps/search/?api=1&query=McDonald+Falls,+Glacier+National+Park" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>McDonald Falls</a></li>
+                            <li><a href="https://www.google.com/maps/search/?api=1&query=The+Loop+Overlook,+Going-to-the-Sun+Road" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>The Loop Overlook</a></li>
+                            <li><a href="https://www.google.com/maps/search/?api=1&query=Jackson+Glacier+Overlook" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Jackson Glacier Overlook</a></li>
+                            <li><a href="https://www.google.com/maps/search/?api=1&query=Triple+Arches,+Going-to-the-Sun+Road" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Triple Arches</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="day5Modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-body">
+                <span class="close-btn">&times;</span>
+                <h2 class="font-lora text-2xl md:text-3xl font-bold mb-4">Thursday: Departure Day</h2>
+                <div class="mt-4">
+                    <div class="schedule-entry"><div class="schedule-time">MORNING</div><div class="schedule-details">Return rental car to <a href="https://www.google.com/maps/search/?api=1&query=Thrifty+Car+Rental+Glacier+Park+International+Airport" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Thrifty at FCA</a></div></div>
+                    <div class="schedule-entry"><div class="schedule-time">10:46 AM</div><div class="schedule-details">Depart from <a href="https://www.google.com/maps/search/?api=1&query=Glacier+Park+International+Airport+FCA" target="_blank" class="location-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM12 11.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>Glacier Park Int'l (FCA)</a></div></div>
+                </div>
+                 <p class="mt-8 text-center font-semibold text-lg">Have a safe flight home!</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reservation Modals -->
+    <div id="reservationModal" class="modal">
+        <div class="modal-content" style="background-color: white; color: #333; overflow-y: auto;">
+             <span class="close-btn" style="color: #888;">&times;</span>
+             <div class="p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 font-lora">Glacier Park Boat Company</h2>
+                    <p class="text-sm text-gray-500">since 1938</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Reservation Details</h3>
+                    <div class="space-y-3 text-gray-600">
+                        <div class="flex justify-between"><span class="font-semibold">Confirmation #:</span> <span class="font-mono bg-gray-200 px-2 py-1 rounded">ZZ062625103</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Name:</span> <span>Herschel Leiner</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Location:</span> <span>Lake McDonald</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Date / Time:</span> <span>07/07/2025 7:00 p.m.</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Tour:</span> <span>Scenic Tour</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Passengers:</span> <span>2 Adults</span></div>
+                        <div class="flex justify-between border-t pt-3 mt-3"><span class="font-semibold">Total Fees:</span> <span class="font-bold text-lg">$54.00</span></div>
+                    </div>
+                </div>
+                <div class="mt-6 text-sm text-gray-500">
+                    <p><strong>Please Note:</strong> Arrive at the ticket office 30 minutes prior to departure to pick up your tickets. Boarding begins 15 minutes prior to departure. Seats will be forfeited 10 minutes prior to departure.</p>
+                </div>
+             </div>
+        </div>
+    </div>
+    
+    <div id="sailingReservationModal" class="modal">
+        <div class="modal-content" style="background-color: white; color: #333; overflow-y: auto;">
+             <span class="close-btn" style="color: #888;">&times;</span>
+             <div class="p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 font-lora">Go Sail Partners</h2>
+                    <p class="text-sm text-gray-500">Flathead Lake Boat Tour</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Booking Confirmed</h3>
+                    <div class="space-y-3 text-gray-600">
+                        <div class="flex justify-between"><span class="font-semibold">Booking #:</span> <span class="font-mono bg-gray-200 px-2 py-1 rounded">294949081</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Guests:</span> <span>Chavi and Herschel Leiner</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Activity:</span> <span>Private Sail Charter</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Date / Time:</span> <span>07/08/2025 10:00 AM - 1:00 PM</span></div>
+                         <div class="flex justify-between border-t pt-3 mt-3"><span class="font-semibold">Total Paid:</span> <span class="font-bold text-lg">$640.00</span></div>
+                    </div>
+                </div>
+                <div class="mt-6 text-sm text-gray-500">
+                    <p><strong>Meeting Location:</strong> Please meet us at <a href="https://www.google.com/maps/search/?api=1&query=38132+U.S.+93+Big+Arm,+MT+59910" target="_blank" class="text-blue-600 hover:underline">38132 U.S. 93, Big Arm, MT 59910</a> in the parking lot by the gate. <strong>DO NOT GO TO THE DOCK WITHOUT US!</strong></p>
+                </div>
+             </div>
+        </div>
+    </div>
+    
+    <div id="wednesdayBoatReservationModal" class="modal">
+        <div class="modal-content" style="background-color: white; color: #333; overflow-y: auto;">
+             <span class="close-btn" style="color: #888;">&times;</span>
+             <div class="p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 font-lora">Glacier Park Boat Company</h2>
+                    <p class="text-sm text-gray-500">since 1938</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Reservation Details</h3>
+                    <div class="space-y-3 text-gray-600">
+                        <div class="flex justify-between"><span class="font-semibold">Confirmation #:</span> <span class="font-mono bg-gray-200 px-2 py-1 rounded">JC070325263</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Name:</span> <span>Chavi Leiner</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Location:</span> <span>St. Mary Lake at Rising Sun</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Date / Time:</span> <span>07/09/2025 1:00 p.m.</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Tour:</span> <span>Scenic Tour + Hike</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Passengers:</span> <span>2 Adults</span></div>
+                        <div class="flex justify-between border-t pt-3 mt-3"><span class="font-semibold">Total Fees:</span> <span class="font-bold text-lg">$81.00</span></div>
+                    </div>
+                </div>
+                <div class="mt-6 text-sm text-gray-500">
+                    <p><strong>Please Note:</strong> Arrive at the ticket office 30 minutes prior to departure to pick up your tickets. Boarding begins 15 minutes prior to departure. Seats will be forfeited 10 minutes prior to departure.</p>
+                </div>
+             </div>
+        </div>
+    </div>
+    
+    <div id="utvReservationModal" class="modal">
+        <div class="modal-content" style="background-color: white; color: #333; overflow-y: auto;">
+             <span class="close-btn" style="color: #888;">&times;</span>
+             <div class="p-8">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 font-lora">Glacier Ridge Runners</h2>
+                    <p class="text-sm text-gray-500">EST. 2014</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">UTV Family Fun</h3>
+                    <div class="space-y-3 text-gray-600">
+                        <div class="flex justify-between"><span class="font-semibold">Reservation Code:</span> <span class="font-mono bg-gray-200 px-2 py-1 rounded">4DTMM2</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">PIN:</span> <span class="font-mono bg-gray-200 px-2 py-1 rounded">1334</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Name:</span> <span>Herschel Leiner</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Activity:</span> <span>2 Seater Side-by-Side (Half Day)</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Vehicle:</span> <span>2 Seat Can-Am Maverick #1</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Pick Up:</span> <span>Jul 8, 2025 at 01:30 PM</span></div>
+                        <div class="flex justify-between"><span class="font-semibold">Drop Off:</span> <span>Jul 8, 2025 at 05:30 PM</span></div>
+                    </div>
+                </div>
+                <div class="mt-6 text-center">
+                     <a href="#!" class="action-link">Manage Reservation</a>
+                </div>
+             </div>
+        </div>
+    </div>
+
+
+    <script>
+        function openModal(modalId) {
+            // Close any other open modals first
+            document.querySelectorAll('.modal').forEach(modal => {
+                if(modal.id !== modalId) {
+                   // modal.style.display = 'none';
+                }
+            });
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.onclick = function() {
+                this.closest('.modal').style.display = 'none';
+            }
+        });
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>
+
